@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "windows-gcc-x64",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/**",
+                "${workspaceFolder}",
+                "${workspaceFolder}/build",
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/linux_build/release/**",
+                "../build-oceaSsystem-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/**"
+            ],
+            "cStandard": "${default}",
+            "cppStandard": "${default}",
+            "intelliSenseMode": "windows-gcc-x64",
+            "compilerPath": "D:/Qt/Qt5.14.2/Tools/mingw730_64/bin/gcc.exe"
+        }
+    ],
+    "version": 4
+}

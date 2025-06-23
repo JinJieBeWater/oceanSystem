@@ -1,5 +1,7 @@
 QT       += core gui
 
+QT += texttospeech
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
@@ -15,15 +17,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+# 添加头文件路径
+INCLUDEPATH += $$PWD/libs
+
 SOURCES += \
     main.cpp \
-    login.cpp
+    login.cpp \
+    $$files($$PWD/libs/*.cpp) \
+    mainwin.cpp
 
 HEADERS += \
-    login.h
+    login.h \
+    $$files($$PWD/libs/*.h) \
+    mainwin.h
 
 FORMS += \
-    login.ui
+    login.ui \
+    mainwin.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

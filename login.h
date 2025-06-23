@@ -2,6 +2,10 @@
 #define LOGIN_H
 
 #include <QMainWindow>
+#include <QTextToSpeech>
+
+#include "mainwin.h"
+#include "Log.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -23,11 +27,9 @@ private slots:
 
     void on_signUpBtn_clicked();
 
-    void on_signUpBtn_pressed();
-
-    void on_signUpBtn_released();
-
 private:
     Ui::login *ui;
+    QTextToSpeech *speech;
+    mainwin *mainWin;
 };
 #endif // LOGIN_H

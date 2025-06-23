@@ -1,11 +1,16 @@
 #include "login.h"
 #include "ui_login.h"
-#include <QDebug>
+#include <QMessageBox>
+
+#include "mainwin.h"
+#include "Log.h"
 
 login::login(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::login)
 {
     ui->setupUi(this);
+    speech = new QTextToSpeech(this);
+    mainWin = new mainwin(this);
 }
 
 login::~login()
@@ -17,28 +22,36 @@ void login::on_signInBtn_clicked()
 {
     QString username = ui->usernameLineEdit->text();
     QString password = ui->passwordLineEdit->text();
-    qDebug() << "Username:" << username;
-    qDebug() << "Password:" << password;
-    qDebug() << "Login button clicked";
+    Log() << "Username:" << username;
+    Log() << "Password:" << password;
+
+    if (username.isEmpty() || password.isEmpty())
+    {
+        QMessageBox::critical(this, "Error", "Username or password cannot be empty!");
+    }
+    else
+    {
+        speech->say("Sign In successful!");
+        mainWin->show();
+        this->hide();
+    }
 }
 
 void login::on_signUpBtn_clicked()
 {
     QString username = ui->usernameLineEdit->text();
     QString password = ui->passwordLineEdit->text();
-    qDebug() << "Username:" << username;
-    qDebug() << "Password:" << password;
-    qDebug() << "Sign Up button clicked";
-}
+    Log() << "Username:" << username;
+    Log() << "Password:" << password;
 
-void login::on_signUpBtn_pressed()
-{
-    // 设置背景颜色为红色
-    this->setStyleSheet("QMainWindow{background-color: red;};");
-}
-
-void login::on_signUpBtn_released()
-{
-    // 设置背景颜色为蓝色
-    this->setStyleSheet("QMainWindow{background-color: blue;};");
+    if (username.isEmpty() || password.isEmpty())
+    {
+        QMessageBox::critical(this, "Error", "Username or password cannot be empty!");
+    }
+    else
+    {
+        speech->say("Sign Up successful!");
+        mainWin->show();
+        this->hide();
+    }
 }

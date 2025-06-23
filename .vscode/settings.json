@@ -5,7 +5,11 @@
     "*.md": "markdown",
     "*.css": "tailwindcss",
     "qapplication": "cpp",
-    "qdebug": "cpp"
+    "qdebug": "cpp",
+    "qmessagebox": "cpp",
+    "qtexttospeech": "cpp",
+    "new": "cpp",
+    "qfileinfo": "cpp"
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": true,

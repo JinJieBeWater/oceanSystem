@@ -4,7 +4,10 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class login; }
+namespace Ui
+{
+    class login;
+}
 QT_END_NAMESPACE
 
 class login : public QMainWindow
@@ -14,6 +17,15 @@ class login : public QMainWindow
 public:
     login(QWidget *parent = nullptr);
     ~login();
+
+private slots:
+    void on_signInBtn_clicked();
+
+    void on_signUpBtn_clicked();
+
+    void on_signUpBtn_pressed();
+
+    void on_signUpBtn_released();
 
 private:
     Ui::login *ui;

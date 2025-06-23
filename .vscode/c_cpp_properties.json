@@ -9,7 +9,8 @@
                 "${workspaceFolder}/build",
                 "${workspaceFolder}/include/**",
                 "${workspaceFolder}/linux_build/release/**",
-                "../build-oceaSsystem-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/**"
+                "../build-oceaSsystem-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/**",
+                "D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore"
             ],
             "cStandard": "${default}",
             "cppStandard": "${default}",

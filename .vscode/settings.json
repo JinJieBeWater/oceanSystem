@@ -4,6 +4,12 @@
     "pages.json": "jsonc",
     "*.md": "markdown",
     "*.css": "tailwindcss",
-    "qapplication": "cpp"
-  }
+    "qapplication": "cpp",
+    "qdebug": "cpp"
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": true,
+  "explorer.fileNesting.patterns": {
+    "*.cpp": "$(capture).hpp, $(capture).h, $(capture).hxx, $(capture).hh, $(capture).ui",
+  },
 }

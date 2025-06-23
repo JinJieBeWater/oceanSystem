@@ -115,7 +115,7 @@
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>12</pointsize>
+              <pointsize>16</pointsize>
              </font>
             </property>
             <property name="text">
@@ -124,7 +124,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit_6">
+           <widget class="QLineEdit" name="usernameLineEdit">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -134,8 +134,11 @@
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>12</pointsize>
+              <pointsize>16</pointsize>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">border-radius: 12px;</string>
             </property>
             <property name="maxLength">
              <number>8</number>
@@ -196,7 +199,7 @@
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>12</pointsize>
+              <pointsize>16</pointsize>
              </font>
             </property>
             <property name="text">
@@ -205,7 +208,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit_2">
+           <widget class="QLineEdit" name="passwordLineEdit">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -215,8 +218,11 @@
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>12</pointsize>
+              <pointsize>16</pointsize>
              </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">border-radius: 12px;</string>
             </property>
             <property name="maxLength">
              <number>8</number>
@@ -278,7 +284,7 @@
           <property name="font">
            <font>
             <family>隶书</family>
-            <pointsize>12</pointsize>
+            <pointsize>16</pointsize>
            </font>
           </property>
           <property name="text">
@@ -307,7 +313,7 @@
           <property name="font">
            <font>
             <family>隶书</family>
-            <pointsize>12</pointsize>
+            <pointsize>16</pointsize>
            </font>
           </property>
           <property name="text">

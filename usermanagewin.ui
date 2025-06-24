@@ -15,40 +15,6 @@
   </property>
   <property name="styleSheet">
    <string notr="true">
-QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceaSsystem/resources/ocean.jpg);}
-QLabel {
-    font-size: 18px;
-    color: #222f3e;
-}
-QTableWidget {
-    background: rgba(255,255,255,0.85);
-    border-radius: 12px;
-    font-size: 16px;
-    selection-background-color: #48a9e6;
-    selection-color: white;
-}
-QPushButton {
-    background-color: #48a9e6;
-    color: white;
-    border-radius: 12px;
-    font-size: 18px;
-    padding: 8px 24px;
-    margin: 0 8px;
-}
-QPushButton:hover {
-    background-color: #357ab7;
-}
-QLineEdit {
-    border-radius: 10px;
-    border: 1.5px solid #b2bec3;
-    padding: 6px 14px;
-    font-size: 16px;
-    background: #f5f6fa;
-    margin-bottom: 8px;
-}
-QWidget#centralwidget {
-    background: transparent;
-}
    </string>
   </property>
   <widget class="QWidget" name="centralwidget">

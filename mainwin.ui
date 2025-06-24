@@ -14,49 +14,7 @@
    <string>仪表盘</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceaSsystem/resources/ocean.jpg);}
-QLabel#title {
-    color: #0a3d62;
-    font-size: 28px;
-    font-weight: bold;
-    letter-spacing: 6px;
-    background: rgba(255,255,255,0.7);
-    border-radius: 12px;
-    padding: 8px 24px;
-}
-QPushButton {
-    background-color: #48a9e6;
-    color: white;
-    border-radius: 12px;
-    font-size: 18px;
-    padding: 10px 24px;
-    margin: 8px 0;
-}
-QPushButton:hover {
-    background-color: #357ab7;
-}
-QWidget#centralwidget {
-    background: transparent;
-}
-QGroupBox, QFrame {
-    background: rgba(255,255,255,0.8);
-    border: 1.5px solid #b2bec3;
-    border-radius: 16px;
-    margin: 8px;
-    padding: 12px;
-}
-QLabel {
-    font-size: 16px;
-}
-QLineEdit {
-    border-radius: 8px;
-    border: 1px solid #b2bec3;
-    padding: 4px 8px;
-    font-size: 16px;
-    background: #f5f6fa;
-}
-   </string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -73,7 +31,7 @@ QLineEdit {
         <property name="font">
          <font>
           <family>隶书</family>
-          <pointsize>-1</pointsize>
+          <pointsize>16</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -107,6 +65,12 @@ QLineEdit {
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="font">
+         <font>
+          <family>隶书</family>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>游客</string>
         </property>
@@ -135,11 +99,11 @@ QLineEdit {
       <item>
        <layout class="QVBoxLayout" name="nav">
         <item>
-         <widget class="QPushButton" name="pushButton_5">
+         <widget class="QPushButton" name="userManageNav">
           <property name="font">
            <font>
             <family>隶书</family>
-            <pointsize>-1</pointsize>
+            <pointsize>16</pointsize>
            </font>
           </property>
           <property name="text">
@@ -152,7 +116,7 @@ QLineEdit {
           <property name="font">
            <font>
             <family>隶书</family>
-            <pointsize>-1</pointsize>
+            <pointsize>16</pointsize>
            </font>
           </property>
           <property name="text">
@@ -165,7 +129,7 @@ QLineEdit {
           <property name="font">
            <font>
             <family>隶书</family>
-            <pointsize>-1</pointsize>
+            <pointsize>16</pointsize>
            </font>
           </property>
           <property name="text">
@@ -200,7 +164,7 @@ QLineEdit {
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>-1</pointsize>
+              <pointsize>16</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -218,7 +182,7 @@ QLineEdit {
               <property name="font">
                <font>
                 <family>隶书</family>
-                <pointsize>-1</pointsize>
+                <pointsize>16</pointsize>
                </font>
               </property>
               <property name="text">
@@ -237,7 +201,7 @@ QLineEdit {
               <property name="font">
                <font>
                 <family>隶书</family>
-                <pointsize>-1</pointsize>
+                <pointsize>16</pointsize>
                </font>
               </property>
              </widget>
@@ -251,7 +215,7 @@ QLineEdit {
               <property name="font">
                <font>
                 <family>隶书</family>
-                <pointsize>-1</pointsize>
+                <pointsize>16</pointsize>
                </font>
               </property>
               <property name="text">
@@ -270,7 +234,7 @@ QLineEdit {
               <property name="font">
                <font>
                 <family>隶书</family>
-                <pointsize>-1</pointsize>
+                <pointsize>16</pointsize>
                </font>
               </property>
              </widget>
@@ -302,7 +266,7 @@ QLineEdit {
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>-1</pointsize>
+              <pointsize>16</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -318,7 +282,7 @@ QLineEdit {
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>-1</pointsize>
+              <pointsize>16</pointsize>
              </font>
             </property>
             <property name="text">
@@ -331,7 +295,7 @@ QLineEdit {
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>-1</pointsize>
+              <pointsize>16</pointsize>
              </font>
             </property>
             <property name="text">

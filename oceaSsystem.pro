@@ -2,6 +2,8 @@ QT       += core gui
 
 QT += texttospeech
 
+QT += sql
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
@@ -24,16 +26,19 @@ SOURCES += \
     main.cpp \
     login.cpp \
     $$files($$PWD/libs/*.cpp) \
-    mainwin.cpp
+    mainwin.cpp \
+    usermanagewin.cpp
 
 HEADERS += \
     login.h \
     $$files($$PWD/libs/*.h) \
-    mainwin.h
+    mainwin.h \
+    usermanagewin.h
 
 FORMS += \
     login.ui \
-    mainwin.ui
+    mainwin.ui \
+    usermanagewin.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

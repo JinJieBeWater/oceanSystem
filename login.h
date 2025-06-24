@@ -3,9 +3,10 @@
 
 #include <QMainWindow>
 #include <QTextToSpeech>
+#include <QSqlDatabase>
 
-#include "mainwin.h"
 #include "Log.h"
+#include "mainwin.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -22,6 +23,10 @@ public:
     login(QWidget *parent = nullptr);
     ~login();
 
+    void initializeDatabase();
+
+    void createTables();
+
 private slots:
     void on_signInBtn_clicked();
 
@@ -31,5 +36,7 @@ private:
     Ui::login *ui;
     QTextToSpeech *speech;
     mainwin *mainWin;
+    QSqlDatabase db;
 };
+
 #endif // LOGIN_H

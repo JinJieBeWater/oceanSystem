@@ -9,7 +9,8 @@
     "qmessagebox": "cpp",
     "qtexttospeech": "cpp",
     "new": "cpp",
-    "qfileinfo": "cpp"
+    "qfileinfo": "cpp",
+    "qsqldatabase": "cpp"
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": true,

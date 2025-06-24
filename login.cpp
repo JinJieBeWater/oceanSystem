@@ -41,7 +41,7 @@ void login::initializeDatabase()
     else
     {
         db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName("users.db");
+        db.setDatabaseName("D:/University/Yue inlay/db");
     }
 
     if (!db.open())

@@ -13,15 +13,59 @@
   <property name="windowTitle">
    <string>用户管理</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">
+QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceaSsystem/resources/ocean.jpg);}
+QLabel {
+    font-size: 18px;
+    color: #222f3e;
+}
+QTableWidget {
+    background: rgba(255,255,255,0.85);
+    border-radius: 12px;
+    font-size: 16px;
+    selection-background-color: #48a9e6;
+    selection-color: white;
+}
+QPushButton {
+    background-color: #48a9e6;
+    color: white;
+    border-radius: 12px;
+    font-size: 18px;
+    padding: 8px 24px;
+    margin: 0 8px;
+}
+QPushButton:hover {
+    background-color: #357ab7;
+}
+QLineEdit {
+    border-radius: 10px;
+    border: 1.5px solid #b2bec3;
+    padding: 6px 14px;
+    font-size: 16px;
+    background: #f5f6fa;
+    margin-bottom: 8px;
+}
+QWidget#centralwidget {
+    background: transparent;
+}
+   </string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <widget class="QTableWidget" name="tableWidget">
-      <property name="columnCount">
-       <number>4</number>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
       <property name="rowCount">
        <number>0</number>
+      </property>
+      <property name="columnCount">
+       <number>3</number>
       </property>
       <column>
        <property name="text">
@@ -35,37 +79,177 @@
       </column>
       <column>
        <property name="text">
-        <string>角色</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>状态</string>
+        <string>密码</string>
        </property>
       </column>
      </widget>
     </item>
-    <item>
+    <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="btnCreate">
-        <property name="text">
+       <widget class="QGroupBox" name="groupCreate">
+        <property name="title">
          <string>创建用户</string>
         </property>
+        <layout class="QFormLayout" name="formLayoutCreate">
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelCreateUserId">
+           <property name="text">
+            <string>用户ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="editCreateUserId">
+           <property name="placeholderText">
+            <string>请输入用户ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelCreateUserName">
+           <property name="text">
+            <string>用户名</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="editCreateUserName">
+           <property name="placeholderText">
+            <string>请输入用户名</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelCreatePassword">
+           <property name="text">
+            <string>密码</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="editCreatePassword">
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+           <property name="placeholderText">
+            <string>请输入密码</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QPushButton" name="btnCreateConfirm">
+           <property name="text">
+            <string>创建</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnEdit">
-        <property name="text">
+       <widget class="QGroupBox" name="groupEdit">
+        <property name="title">
          <string>修改用户</string>
         </property>
+        <layout class="QFormLayout" name="formLayoutEdit">
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelEditUserId">
+           <property name="text">
+            <string>用户ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="editEditUserId">
+           <property name="placeholderText">
+            <string>请输入要修改的用户ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelEditUserName">
+           <property name="text">
+            <string>新用户名</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="editEditUserName">
+           <property name="placeholderText">
+            <string>请输入新用户名</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelEditPassword">
+           <property name="text">
+            <string>新密码</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="editEditPassword">
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+           <property name="placeholderText">
+            <string>请输入新密码</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QPushButton" name="btnEditConfirm">
+           <property name="text">
+            <string>修改</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnDelete">
-        <property name="text">
+       <widget class="QGroupBox" name="groupDelete">
+        <property name="title">
          <string>删除用户</string>
         </property>
+        <layout class="QFormLayout" name="formLayoutDelete">
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelDeleteUserId">
+           <property name="text">
+            <string>用户ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="editDeleteUserId">
+           <property name="placeholderText">
+            <string>请输入要删除的用户ID</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelDeleteUserName">
+           <property name="text">
+            <string>用户名</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="editDeleteUserName">
+           <property name="placeholderText">
+            <string>请输入要删除的用户名</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="btnDeleteConfirm">
+           <property name="text">
+            <string>删除</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

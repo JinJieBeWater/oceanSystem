@@ -14,7 +14,49 @@
    <string>仪表盘</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceaSsystem/resources/ocean.jpg);};</string>
+   <string notr="true">
+QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceaSsystem/resources/ocean.jpg);}
+QLabel#title {
+    color: #0a3d62;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 6px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 12px;
+    padding: 8px 24px;
+}
+QPushButton {
+    background-color: #48a9e6;
+    color: white;
+    border-radius: 12px;
+    font-size: 18px;
+    padding: 10px 24px;
+    margin: 8px 0;
+}
+QPushButton:hover {
+    background-color: #357ab7;
+}
+QWidget#centralwidget {
+    background: transparent;
+}
+QGroupBox, QFrame {
+    background: rgba(255,255,255,0.8);
+    border: 1.5px solid #b2bec3;
+    border-radius: 16px;
+    margin: 8px;
+    padding: 12px;
+}
+QLabel {
+    font-size: 16px;
+}
+QLineEdit {
+    border-radius: 8px;
+    border: 1px solid #b2bec3;
+    padding: 4px 8px;
+    font-size: 16px;
+    background: #f5f6fa;
+}
+   </string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -185,6 +227,9 @@
             <property name="text">
              <string>传感器数据</string>
             </property>
+            <property name="styleSheet">
+             <string>background:rgba(255,255,255,0.8);border-radius:10px;padding:6px 16px;</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -283,6 +328,9 @@
             </property>
             <property name="text">
              <string>控制传感器</string>
+            </property>
+            <property name="styleSheet">
+             <string>background:rgba(255,255,255,0.8);border-radius:10px;padding:6px 16px;</string>
             </property>
            </widget>
           </item>

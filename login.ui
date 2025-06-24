@@ -18,7 +18,45 @@
     <normaloff>../../../../JinJieBeWater/BG/119124169_p0.png</normaloff>../../../../JinJieBeWater/BG/119124169_p0.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceaSsystem/resources/ocean.jpg);};</string>
+   <string notr="true">
+QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceaSsystem/resources/ocean.jpg);}
+QLabel#title {
+    color: #0a3d62;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 6px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 16px;
+    padding: 12px 32px;
+    margin-bottom: 18px;
+}
+QLabel {
+    font-size: 18px;
+    color: #222f3e;
+}
+QLineEdit {
+    border-radius: 12px;
+    border: 1.5px solid #b2bec3;
+    padding: 8px 16px;
+    font-size: 18px;
+    background: #f5f6fa;
+    margin-bottom: 8px;
+}
+QPushButton {
+    background-color: #48a9e6;
+    color: white;
+    border-radius: 14px;
+    font-size: 18px;
+    padding: 10px 32px;
+    margin: 0 8px;
+}
+QPushButton:hover {
+    background-color: #357ab7;
+}
+QWidget#centralwidget {
+    background: transparent;
+}
+   </string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">

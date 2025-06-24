@@ -14,8 +14,7 @@
    <string>用户管理</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-   </string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -84,41 +83,27 @@
         </property>
         <layout class="QFormLayout" name="formLayoutCreate">
          <item row="0" column="0">
-          <widget class="QLabel" name="labelCreateUserId">
-           <property name="text">
-            <string>用户ID</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="editCreateUserId">
-           <property name="placeholderText">
-            <string>请输入用户ID</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
           <widget class="QLabel" name="labelCreateUserName">
            <property name="text">
             <string>用户名</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
+         <item row="0" column="1">
           <widget class="QLineEdit" name="editCreateUserName">
            <property name="placeholderText">
             <string>请输入用户名</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="1" column="0">
           <widget class="QLabel" name="labelCreatePassword">
            <property name="text">
             <string>密码</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="1" column="1">
           <widget class="QLineEdit" name="editCreatePassword">
            <property name="echoMode">
             <enum>QLineEdit::Password</enum>
@@ -128,7 +113,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+         <item row="2" column="1">
           <widget class="QPushButton" name="btnCreateConfirm">
            <property name="text">
             <string>创建</string>

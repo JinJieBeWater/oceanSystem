@@ -23,6 +23,9 @@ public:
 
 private slots:
     void on_btnSearchUserName_clicked();
+    void on_btnCreateConfirm_clicked();
+    void on_btnEditConfirm_clicked();
+    void on_btnDeleteConfirm_clicked();
 
 private:
     Ui::usermanagewin *ui;

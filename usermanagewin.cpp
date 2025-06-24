@@ -71,11 +71,13 @@ void usermanagewin::refreshTable(const QString &usernameFilter)
         QMessageBox::critical(this, "查询失败", query.lastError().text());
         return;
     }
+    QIcon icon("D:/University/Yue inlay/qt/oceaSsystem/resources/user.png");
     int row = 0;
+    ui->tableWidget->setIconSize(QSize(32, 32));
     while (query.next())
     {
         ui->tableWidget->insertRow(row);
-        ui->tableWidget->setItem(row, 0, new QTableWidgetItem(query.value(0).toString()));
+        ui->tableWidget->setItem(row, 0, new QTableWidgetItem(icon, query.value(0).toString()));
         ui->tableWidget->setItem(row, 1, new QTableWidgetItem(query.value(1).toString()));
         ui->tableWidget->setItem(row, 2, new QTableWidgetItem(query.value(2).toString()));
         row++;

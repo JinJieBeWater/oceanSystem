@@ -41,7 +41,7 @@ void login::initializeDatabase()
     else
     {
         db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName("D:/University/Yue inlay/db");
+        db.setDatabaseName("D:/University/Yue inlay/oceanSystem.db");
     }
 
     if (!db.open())
@@ -105,8 +105,6 @@ void login::on_signInBtn_clicked()
 
     if (query.next())
     {
-        int userId = query.value(0).toInt();
-        UserInfo userInfo{userId, username};
         Log() << "User" << username << "logged in successfully";
         speech->say("Sign In successful!");
         mainWin->show();
@@ -190,16 +188,6 @@ void login::on_signUpBtn_clicked()
 
     if (insertQuery.exec())
     {
-        // 注册成功后获取新用户id
-        QSqlQuery idQuery(db);
-        idQuery.prepare("SELECT id FROM users WHERE username = :username");
-        idQuery.bindValue(":username", username);
-        int userId = -1;
-        if (idQuery.exec() && idQuery.next())
-        {
-            userId = idQuery.value(0).toInt();
-        }
-        UserInfo userInfo{userId, username};
         Log() << "User" << username << "registered successfully";
         speech->say("Sign Up successful!");
         mainWin->show();

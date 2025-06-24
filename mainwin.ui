@@ -73,7 +73,9 @@ QLineEdit {
         <property name="font">
          <font>
           <family>隶书</family>
-          <pointsize>18</pointsize>
+          <pointsize>-1</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="text">
@@ -92,29 +94,6 @@ QLineEdit {
         <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>当前用户：</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Preferred</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>10</width>
           <height>20</height>
          </size>
         </property>
@@ -160,7 +139,7 @@ QLineEdit {
           <property name="font">
            <font>
             <family>隶书</family>
-            <pointsize>16</pointsize>
+            <pointsize>-1</pointsize>
            </font>
           </property>
           <property name="text">
@@ -173,7 +152,7 @@ QLineEdit {
           <property name="font">
            <font>
             <family>隶书</family>
-            <pointsize>16</pointsize>
+            <pointsize>-1</pointsize>
            </font>
           </property>
           <property name="text">
@@ -186,7 +165,7 @@ QLineEdit {
           <property name="font">
            <font>
             <family>隶书</family>
-            <pointsize>16</pointsize>
+            <pointsize>-1</pointsize>
            </font>
           </property>
           <property name="text">
@@ -221,14 +200,14 @@ QLineEdit {
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>16</pointsize>
+              <pointsize>-1</pointsize>
              </font>
-            </property>
-            <property name="text">
-             <string>传感器数据</string>
             </property>
             <property name="styleSheet">
              <string>background:rgba(255,255,255,0.8);border-radius:10px;padding:6px 16px;</string>
+            </property>
+            <property name="text">
+             <string>传感器数据</string>
             </property>
            </widget>
           </item>
@@ -239,7 +218,7 @@ QLineEdit {
               <property name="font">
                <font>
                 <family>隶书</family>
-                <pointsize>16</pointsize>
+                <pointsize>-1</pointsize>
                </font>
               </property>
               <property name="text">
@@ -258,7 +237,7 @@ QLineEdit {
               <property name="font">
                <font>
                 <family>隶书</family>
-                <pointsize>16</pointsize>
+                <pointsize>-1</pointsize>
                </font>
               </property>
              </widget>
@@ -272,7 +251,7 @@ QLineEdit {
               <property name="font">
                <font>
                 <family>隶书</family>
-                <pointsize>16</pointsize>
+                <pointsize>-1</pointsize>
                </font>
               </property>
               <property name="text">
@@ -291,7 +270,7 @@ QLineEdit {
               <property name="font">
                <font>
                 <family>隶书</family>
-                <pointsize>16</pointsize>
+                <pointsize>-1</pointsize>
                </font>
               </property>
              </widget>
@@ -323,14 +302,14 @@ QLineEdit {
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>16</pointsize>
+              <pointsize>-1</pointsize>
              </font>
-            </property>
-            <property name="text">
-             <string>控制传感器</string>
             </property>
             <property name="styleSheet">
              <string>background:rgba(255,255,255,0.8);border-radius:10px;padding:6px 16px;</string>
+            </property>
+            <property name="text">
+             <string>控制传感器</string>
             </property>
            </widget>
           </item>
@@ -339,7 +318,7 @@ QLineEdit {
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>16</pointsize>
+              <pointsize>-1</pointsize>
              </font>
             </property>
             <property name="text">
@@ -352,7 +331,7 @@ QLineEdit {
             <property name="font">
              <font>
               <family>隶书</family>
-              <pointsize>16</pointsize>
+              <pointsize>-1</pointsize>
              </font>
             </property>
             <property name="text">

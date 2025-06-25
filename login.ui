@@ -14,12 +14,12 @@
    <string>广东海洋大学水产养殖系统</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>../../../../JinJieBeWater/BG/119124169_p0.png</normaloff>../../../../JinJieBeWater/BG/119124169_p0.png</iconset>
+   <iconset resource="resources/resources.qrc">
+    <normaloff>:/logo.png</normaloff>:/logo.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceanSystem/resources/ocean.jpg);}
+   <string notr="true">QMainWindow{border-image: url(:/ocean.jpg);}
+
    </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -386,6 +386,8 @@ QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceanSystem/resources/o
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

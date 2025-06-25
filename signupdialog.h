@@ -21,6 +21,7 @@ public:
     explicit signupdialog(QWidget *parent = nullptr);
     ~signupdialog();
 
+    void getDatabase(const QSqlDatabase &database);
 private slots:
     void onSignUpClicked();
 

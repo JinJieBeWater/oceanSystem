@@ -5,23 +5,17 @@ signupdialog::signupdialog(QWidget *parent) : QDialog(parent),
                                               ui(new Ui::signupdialog)
 {
     ui->setupUi(this);
-    // 数据库连接
-    if (QSqlDatabase::contains(QSqlDatabase::defaultConnection))
-    {
-        db = QSqlDatabase::database(QSqlDatabase::defaultConnection);
-    }
-    else
-    {
-        db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName("D:/University/Yue inlay/oceanSystem.db");
-        db.open();
-    }
     connect(ui->pushButton, &QPushButton::clicked, this, &signupdialog::onSignUpClicked);
 }
 
 signupdialog::~signupdialog()
 {
     delete ui;
+}
+
+void signupdialog::getDatabase(const QSqlDatabase &database)
+{
+    db = database;
 }
 
 void signupdialog::onSignUpClicked()

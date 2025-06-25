@@ -11,7 +11,12 @@
     "new": "cpp",
     "qfileinfo": "cpp",
     "qsqldatabase": "cpp",
-    "qcamera": "cpp"
+    "qcamera": "cpp",
+    "qcamerainfo": "cpp",
+    "array": "cpp",
+    "string_view": "cpp",
+    "initializer_list": "cpp",
+    "utility": "cpp"
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": true,

@@ -19,7 +19,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">
-QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceaSsystem/resources/ocean.jpg);}
+QMainWindow{border-image: url(D:/University/Yue inlay/qt/oceanSystem/resources/ocean.jpg);}
    </string>
   </property>
   <widget class="QWidget" name="centralwidget">

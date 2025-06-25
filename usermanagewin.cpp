@@ -71,7 +71,7 @@ void usermanagewin::refreshTable(const QString &usernameFilter)
         QMessageBox::critical(this, "查询失败", query.lastError().text());
         return;
     }
-    QIcon icon("D:/University/Yue inlay/qt/oceaSsystem/resources/user.png");
+    QIcon icon("D:/University/Yue inlay/qt/oceanSystem/resources/user.png");
     int row = 0;
     ui->tableWidget->setIconSize(QSize(32, 32));
     while (query.next())
@@ -114,7 +114,7 @@ void usermanagewin::on_btnCreateConfirm_clicked()
     }
     else
     {
-        QMessageBox::critical(this, "失败", query.lastError().text());
+        QMessageBox::critical(this, "失败", "创建用户失败！\n" + query.lastError().text());
     }
 }
 
@@ -171,7 +171,7 @@ void usermanagewin::on_btnEditConfirm_clicked()
     }
     else
     {
-        QMessageBox::critical(this, "失败", query.lastError().text());
+        QMessageBox::critical(this, "失败", "更新用户信息失败！\n" + query.lastError().text());
     }
 }
 

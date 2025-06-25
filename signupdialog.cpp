@@ -16,6 +16,7 @@ signupdialog::signupdialog(QWidget *parent) : QDialog(parent),
         db.setDatabaseName("D:/University/Yue inlay/oceanSystem.db");
         db.open();
     }
+    connect(ui->pushButton, &QPushButton::clicked, this, &signupdialog::onSignUpClicked);
 }
 
 signupdialog::~signupdialog()
@@ -30,32 +31,32 @@ void signupdialog::onSignUpClicked()
     // 输入验证
     if (username.isEmpty() || password.isEmpty())
     {
-        QMessageBox::critical(this, "Error", "Username or password cannot be empty!");
+        QMessageBox::critical(this, "错误", "用户名或密码不能为空！");
         return;
     }
     if (username.length() < 3 || password.length() < 6)
     {
-        QMessageBox::critical(this, "Error", "Username must be at least 3 characters and password at least 6 characters long!");
+        QMessageBox::critical(this, "错误", "用户名至少3位，密码至少6位！");
         return;
     }
     if (username.length() > 20 || password.length() > 20)
     {
-        QMessageBox::critical(this, "Error", "Username and password cannot exceed 20 characters!");
+        QMessageBox::critical(this, "错误", "用户名和密码不能超过20位！");
         return;
     }
     if (username.contains(" ") || password.contains(" "))
     {
-        QMessageBox::critical(this, "Error", "Username and password cannot contain spaces!");
+        QMessageBox::critical(this, "错误", "用户名和密码不能包含空格！");
         return;
     }
     if (username.contains(";") || password.contains(";"))
     {
-        QMessageBox::critical(this, "Error", "Username and password cannot contain semicolons!");
+        QMessageBox::critical(this, "错误", "用户名和密码不能包含分号！");
         return;
     }
     if (!db.isOpen())
     {
-        QMessageBox::critical(this, "Database Error", "Database is not open!");
+        QMessageBox::critical(this, "数据库错误", "数据库未打开！");
         return;
     }
     // 检查用户名是否已存在
@@ -64,12 +65,12 @@ void signupdialog::onSignUpClicked()
     checkQuery.bindValue(":username", username);
     if (!checkQuery.exec())
     {
-        QMessageBox::critical(this, "Database Error", "Check failed!\n" + checkQuery.lastError().text());
+        QMessageBox::critical(this, "数据库错误", "检查失败！\n" + checkQuery.lastError().text());
         return;
     }
     if (checkQuery.next())
     {
-        QMessageBox::critical(this, "Error", "Username already exists!");
+        QMessageBox::critical(this, "错误", "用户名已存在！");
         return;
     }
     // 插入新用户
@@ -84,6 +85,6 @@ void signupdialog::onSignUpClicked()
     }
     else
     {
-        QMessageBox::critical(this, "Database Error", "Failed to sign up!\n" + insertQuery.lastError().text());
+        QMessageBox::critical(this, "数据库错误", "注册失败！\n" + insertQuery.lastError().text());
     }
 }

@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**",
                 "D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/**",
                 "${workspaceFolder}",
-                "../build-oceaSsystem-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/**",
+                "../build-oceanSystemsystem-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/**",
                 "D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtCore",
                 "${workspaceFolder}/libs",
                 "D:/Qt/Qt5.14.2/5.14.2/mingw73_64/include/QtSql"

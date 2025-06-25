@@ -11,6 +11,7 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
 
     // 摄像头相关初始化
     viewfinder = new QCameraViewfinder(this);
+    viewfinder->setMaximumHeight(200); // 限制摄像头显示区最大高度
     QVBoxLayout *layout = new QVBoxLayout(ui->cameraDisplay);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(viewfinder);
@@ -25,23 +26,6 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
 
     // 抓拍相关初始化
     imageCapture = new QCameraImageCapture(nullptr, this);
-
-    // 连接按钮信号到槽（可选，自动连接也可用）
-    connect(ui->userManageButton, &QPushButton::clicked, this, &mainwin::on_userManageButton_clicked);
-    connect(ui->openCameraButton, &QPushButton::clicked, this, &mainwin::on_openCameraButton_clicked);
-    connect(ui->closeCameraButton, &QPushButton::clicked, this, &mainwin::on_closeCameraButton_clicked);
-    connect(ui->snapButton, &QPushButton::clicked, this, &mainwin::on_snapButton_clicked);
-    connect(imageCapture, &QCameraImageCapture::imageCaptured, this, [this](int, const QImage &image)
-            {
-        // 多次抓拍，追加显示
-        QLabel *imgLabel = new QLabel(ui->snapShotArea);
-        // 固定缩略图尺寸，避免图片越来越大
-        QSize thumbSize(200, Qt::KeepAspectRatio); // 可根据需要调整
-        imgLabel->setPixmap(QPixmap::fromImage(image).scaled(thumbSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-        QVBoxLayout *snapLayout = qobject_cast<QVBoxLayout*>(ui->snapShotArea->layout());
-        if (snapLayout) {
-            snapLayout->addWidget(imgLabel);
-        } });
 }
 
 mainwin::~mainwin()
@@ -80,13 +64,15 @@ void mainwin::on_openCameraButton_clicked()
     camera->setViewfinder(viewfinder);
     if (imageCapture)
     {
+        // 断开旧的 imageCaptured 信号，防止重复
+        disconnect(imageCapture, nullptr, this, nullptr);
         delete imageCapture;
     }
     imageCapture = new QCameraImageCapture(camera, this);
     connect(imageCapture, &QCameraImageCapture::imageCaptured, this, [this](int, const QImage &image)
             {
         QLabel *imgLabel = new QLabel(ui->snapShotArea);
-        QSize thumbSize(200, 150); // 可根据需要调整
+        QSize thumbSize(200, 150); // 统一缩略图尺寸
         imgLabel->setPixmap(QPixmap::fromImage(image).scaled(thumbSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         QVBoxLayout *snapLayout = qobject_cast<QVBoxLayout*>(ui->snapShotArea->layout());
         if (snapLayout) {

@@ -27,17 +27,20 @@ SOURCES += \
     login.cpp \
     $$files($$PWD/libs/*.cpp) \
     mainwin.cpp \
+    signupdialog.cpp \
     usermanagewin.cpp
 
 HEADERS += \
     login.h \
     $$files($$PWD/libs/*.h) \
     mainwin.h \
+    signupdialog.h \
     usermanagewin.h
 
 FORMS += \
     login.ui \
     mainwin.ui \
+    signupdialog.ui \
     usermanagewin.ui
 
 # Default rules for deployment.

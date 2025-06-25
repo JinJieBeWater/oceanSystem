@@ -11,7 +11,6 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
 
     // 摄像头相关初始化
     viewfinder = new QCameraViewfinder(this);
-    viewfinder->setMaximumHeight(200); // 限制摄像头显示区最大高度
     QVBoxLayout *layout = new QVBoxLayout(ui->cameraDisplay);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(viewfinder);

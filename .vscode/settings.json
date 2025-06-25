@@ -10,7 +10,8 @@
     "qtexttospeech": "cpp",
     "new": "cpp",
     "qfileinfo": "cpp",
-    "qsqldatabase": "cpp"
+    "qsqldatabase": "cpp",
+    "qcamera": "cpp"
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": true,

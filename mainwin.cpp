@@ -22,6 +22,7 @@
 #include <QTimer>
 #include <cstring>
 #include <sys/mman.h>
+#include "yuvutils.h" // 包含yuvutils.h头文件
 #endif
 
 mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
@@ -267,15 +268,9 @@ void mainwin::on_openCameraButton_clicked()
             QImage img(CAMERA_WIDTH, CAMERA_HEIGHT, QImage::Format_RGB888);
             for (int i = 0, j = 0; i < CAMERA_WIDTH * CAMERA_HEIGHT * 2; i += 4, j += 2) {
                 int y0 = yuyv[i], u = yuyv[i+1], y1 = yuyv[i+2], v = yuyv[i+3];
-                auto yuv2rgb = [](int y, int u, int v) {
-                    int r = y + 1.4075 * (v - 128);
-                    int g = y - 0.3455 * (u - 128) - 0.7169 * (v - 128);
-                    int b = y + 1.779 * (u - 128);
-                    return qRgb(qBound(0, r, 255), qBound(0, g, 255), qBound(0, b, 255));
-                };
                 int px = (j % CAMERA_WIDTH), py = (j / CAMERA_WIDTH);
-                img.setPixel(px, py, yuv2rgb(y0, u, v));
-                img.setPixel(px+1, py, yuv2rgb(y1, u, v));
+                img.setPixel(px, py, yuyv2rgb(y0, u, v));
+                img.setPixel(px+1, py, yuyv2rgb(y1, u, v));
             }
             // 更新 cameraDisplayLabel 的 Pixmap
             cameraDisplayLabel->setPixmap(QPixmap::fromImage(img).scaled(cameraDisplayLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -310,16 +305,9 @@ void mainwin::on_snapButton_clicked()
     for (int i = 0, j = 0; i < CAMERA_WIDTH * CAMERA_HEIGHT * 2; i += 4, j += 2)
     {
         int y0 = yuyv[i], u = yuyv[i + 1], y1 = yuyv[i + 2], v = yuyv[i + 3];
-        auto yuv2rgb = [](int y, int u, int v)
-        {
-            int r = y + 1.402 * (v - 128);
-            int g = y - 0.344136 * (u - 128) - 0.714136 * (v - 128);
-            int b = y + 1.772 * (u - 128);
-            return qRgb(qBound(0, r, 255), qBound(0, g, 255), qBound(0, b, 255));
-        };
         int px = (j % CAMERA_WIDTH), py = (j / CAMERA_WIDTH);
-        img.setPixel(px, py, yuv2rgb(y0, u, v));
-        img.setPixel(px + 1, py, yuv2rgb(y1, u, v));
+        img.setPixel(px, py, yuyv2rgb(y0, u, v));
+        img.setPixel(px + 1, py, yuyv2rgb(y1, u, v));
     }
     // 将抓拍的图像显示到 snapShotArea
     QLabel *imgLabel = new QLabel(ui->snapShotArea);

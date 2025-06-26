@@ -17,7 +17,8 @@
     "string_view": "cpp",
     "initializer_list": "cpp",
     "utility": "cpp",
-    "cstring": "cpp"
+    "cstring": "cpp",
+    "qcameraimagecapture": "cpp"
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": true,

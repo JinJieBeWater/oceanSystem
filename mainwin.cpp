@@ -63,6 +63,8 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(cameraDisplayLabel);
     ui->cameraDisplay->setLayout(layout);
+    // 隐藏摄像头下拉框
+    ui->cameraComboBox->setVisible(false);
 #endif
 }
 

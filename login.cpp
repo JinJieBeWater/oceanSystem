@@ -14,10 +14,11 @@ login::login(QWidget *parent)
 {
     ui->setupUi(this);
     speech = new QTextToSpeech(this);
-    mainWin = new mainwin(this);
 
     // 初始化数据库
     initializeDatabase();
+
+    mainWin = new mainwin(this);
 }
 
 login::~login()

@@ -1,7 +1,28 @@
+#define CAMERA_WIDTH 800
+#define CAMERA_HEIGHT 480
+#define CAMERA_SET_WIDTH 800
+#define CAMERA_SET_HEIGHT 480
+
 #include "mainwin.h"
 #include "ui_mainwin.h"
 #include <QVBoxLayout>
+#include <QMessageBox>
+#include "Log.h"
+#if defined(Q_OS_WIN)
 #include <QCameraInfo>
+#include <QCamera>
+#include <QCameraViewfinder>
+#include <QCameraImageCapture>
+#elif defined(Q_OS_LINUX)
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <linux/videodev2.h>
+#include <QImage>
+#include <QTimer>
+#include <cstring>
+#include <sys/mman.h>
+#endif
 
 mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
                                     ui(new Ui::mainwin)
@@ -9,7 +30,8 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
     ui->setupUi(this);
     userManageWin = new usermanagewin(this);
 
-    // 摄像头相关初始化
+#if defined(Q_OS_WIN)
+    // Windows 摄像头相关初始化
     viewfinder = new QCameraViewfinder(this);
     QVBoxLayout *layout = new QVBoxLayout(ui->cameraDisplay);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -25,15 +47,59 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
 
     // 抓拍相关初始化
     imageCapture = new QCameraImageCapture(nullptr, this);
+#elif defined(Q_OS_LINUX)
+    // v4l2相关成员变量初始化
+    v4l2_fd = -1;         // 摄像头设备文件描述符
+    v4l2_timer = nullptr; // 定时器用于定时采集帧
+    for (int i = 0; i < V4L2_BUFFER_COUNT; ++i)
+    {
+        v4l2_buffers[i].start = nullptr;
+        v4l2_buffers[i].length = 0;
+    }
+    // Linux 摄像头显示初始化
+    cameraDisplayLabel = new QLabel(this);
+    cameraDisplayLabel->setAlignment(Qt::AlignCenter);
+    QVBoxLayout *layout = new QVBoxLayout(ui->cameraDisplay);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(cameraDisplayLabel);
+    ui->cameraDisplay->setLayout(layout);
+#endif
 }
 
 mainwin::~mainwin()
 {
+#if defined(Q_OS_WIN)
     if (camera)
     {
         camera->stop();
         delete camera;
     }
+#elif defined(Q_OS_LINUX)
+    // 释放v4l2相关资源
+    if (v4l2_timer)
+        v4l2_timer->stop();
+    if (v4l2_fd >= 0)
+    {
+        // 关闭流
+        enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        ioctl(v4l2_fd, VIDIOC_STREAMOFF, &type);
+        // 释放缓冲区映射
+        for (int i = 0; i < V4L2_BUFFER_COUNT; ++i)
+        {
+            if (v4l2_buffers[i].start)
+                munmap(v4l2_buffers[i].start, v4l2_buffers[i].length);
+            v4l2_buffers[i].start = nullptr;
+            v4l2_buffers[i].length = 0;
+        }
+        close(v4l2_fd);
+        v4l2_fd = -1;
+    }
+    if (cameraDisplayLabel)
+    {
+        delete cameraDisplayLabel;
+        cameraDisplayLabel = nullptr;
+    }
+#endif
     delete ui;
 }
 
@@ -43,6 +109,7 @@ void mainwin::on_userManageButton_clicked()
     this->hide(); // 隐藏当前窗口
 }
 
+#if defined(Q_OS_WIN)
 void mainwin::on_openCameraButton_clicked()
 {
     // 每次都重建摄像头对象，确保可以切换摄像头
@@ -95,3 +162,200 @@ void mainwin::on_closeCameraButton_clicked()
         camera->stop();
     }
 }
+#elif defined(Q_OS_LINUX)
+// v4l2 摄像头相关槽函数实现（标准流程）
+void mainwin::on_openCameraButton_clicked()
+{
+    if (v4l2_fd >= 0)
+        return; // 已打开
+    v4l2_fd = open("/dev/video7", O_RDWR);
+    if (v4l2_fd < 0)
+    {
+        // 打开失败，可能是设备不存在或权限不足
+        QMessageBox::warning(this, "Error", "Failed to open camera device.");
+        return;
+    }
+
+    // 1. 设置采集格式
+    struct v4l2_format vfmt;
+    memset(&vfmt, 0, sizeof(vfmt));
+    vfmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    vfmt.fmt.pix.width = CAMERA_SET_WIDTH;
+    vfmt.fmt.pix.height = CAMERA_SET_HEIGHT;
+    vfmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+    vfmt.fmt.pix.field = V4L2_FIELD_NONE;
+    if (ioctl(v4l2_fd, VIDIOC_S_FMT, &vfmt) < 0)
+    {
+        QString errMsg = QString("VIDIOC_S_FMT failed: %1").arg(strerror(errno));
+        Log::error(errMsg.toStdString());
+        QMessageBox::warning(this, "ioctl error", errMsg);
+    }
+
+    // 2. 申请缓冲区
+    v4l2_requestbuffers req;
+    memset(&req, 0, sizeof(req));
+    req.count = V4L2_BUFFER_COUNT;
+    req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    req.memory = V4L2_MEMORY_MMAP;
+    if (ioctl(v4l2_fd, VIDIOC_REQBUFS, &req) < 0)
+    {
+        QString errMsg = QString("VIDIOC_REQBUFS failed: %1").arg(strerror(errno));
+        Log::error(errMsg.toStdString());
+        QMessageBox::warning(this, "ioctl error", errMsg);
+    }
+
+    // 3. 查询缓冲区并mmap映射
+    for (int i = 0; i < V4L2_BUFFER_COUNT; ++i)
+    {
+        v4l2_buffer buf;
+        memset(&buf, 0, sizeof(buf));
+        buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        buf.memory = V4L2_MEMORY_MMAP;
+        buf.index = i;
+        if (ioctl(v4l2_fd, VIDIOC_QUERYBUF, &buf) < 0)
+        {
+            QString errMsg = QString("VIDIOC_QUERYBUF failed: %1").arg(strerror(errno));
+            Log::error(errMsg.toStdString());
+            QMessageBox::warning(this, "ioctl error", errMsg);
+        }
+        v4l2_buffers[i].length = buf.length;
+        v4l2_buffers[i].start = mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, v4l2_fd, buf.m.offset);
+    }
+
+    // 4. 入队所有缓冲区
+    for (int i = 0; i < V4L2_BUFFER_COUNT; ++i)
+    {
+        v4l2_buffer buf;
+        memset(&buf, 0, sizeof(buf));
+        buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        buf.memory = V4L2_MEMORY_MMAP;
+        buf.index = i;
+        if (ioctl(v4l2_fd, VIDIOC_QBUF, &buf) < 0)
+        {
+            QString errMsg = QString("VIDIOC_QBUF failed: %1").arg(strerror(errno));
+            Log::error(errMsg.toStdString());
+            QMessageBox::warning(this, "ioctl error", errMsg);
+        }
+    }
+
+    // 5. 启动视频流
+    enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    if (ioctl(v4l2_fd, VIDIOC_STREAMON, &type) < 0)
+    {
+        QString errMsg = QString("VIDIOC_STREAMON failed: %1").arg(strerror(errno));
+        Log::error(errMsg.toStdString());
+        QMessageBox::warning(this, "ioctl error", errMsg);
+    }
+
+    // 6. 启动定时器循环采集
+    if (!v4l2_timer)
+    {
+        v4l2_timer = new QTimer(this);
+        connect(v4l2_timer, &QTimer::timeout, this, [this]()
+                {
+            // 7. 出队一帧
+            v4l2_buffer buf;
+            memset(&buf, 0, sizeof(buf));
+            buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+            buf.memory = V4L2_MEMORY_MMAP;
+            ioctl(v4l2_fd, VIDIOC_DQBUF, &buf);
+            // 8. YUYV转RGB并显示
+            unsigned char *yuyv = (unsigned char*)v4l2_buffers[buf.index].start;
+            QImage img(CAMERA_WIDTH, CAMERA_HEIGHT, QImage::Format_RGB888);
+            for (int i = 0, j = 0; i < CAMERA_WIDTH * CAMERA_HEIGHT * 2; i += 4, j += 2) {
+                int y0 = yuyv[i], u = yuyv[i+1], y1 = yuyv[i+2], v = yuyv[i+3];
+                auto yuv2rgb = [](int y, int u, int v) {
+                    int r = y + 1.402 * (v-128);
+                    int g = y - 0.344136 * (u-128) - 0.714136 * (v-128);
+                    int b = y + 1.772 * (u-128);
+                    return qRgb(qBound(0, r, 255), qBound(0, g, 255), qBound(0, b, 255));
+                };
+                int px = (j % CAMERA_WIDTH), py = (j / CAMERA_WIDTH);
+                img.setPixel(px, py, yuv2rgb(y0, u, v));
+            img.setPixel(px+1, py, yuv2rgb(y1, u, v));
+            }
+            // 更新 cameraDisplayLabel 的 Pixmap
+            cameraDisplayLabel->setPixmap(QPixmap::fromImage(img).scaled(cameraDisplayLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            // 9. 再次入队
+            if (ioctl(v4l2_fd, VIDIOC_QBUF, &buf) < 0) {
+                QString errMsg = QString("VIDIOC_QBUF failed: %1").arg(strerror(errno));
+                Log::error(errMsg.toStdString());
+                QMessageBox::warning(this, "ioctl error", errMsg);
+            } });
+    }
+    v4l2_timer->start(100); // 10fps
+}
+
+void mainwin::on_snapButton_clicked()
+{
+    // 单帧采集：出队、显示、再入队
+    if (v4l2_fd < 0)
+        return;
+    v4l2_buffer buf;
+    memset(&buf, 0, sizeof(buf));
+    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.memory = V4L2_MEMORY_MMAP;
+    if (ioctl(v4l2_fd, VIDIOC_DQBUF, &buf) < 0)
+    {
+        QString errMsg = QString("VIDIOC_DQBUF failed: %1").arg(strerror(errno));
+        Log::error(errMsg.toStdString());
+        QMessageBox::warning(this, "ioctl error", errMsg);
+        return;
+    }
+    unsigned char *yuyv = (unsigned char *)v4l2_buffers[buf.index].start;
+    QImage img(CAMERA_WIDTH, CAMERA_HEIGHT, QImage::Format_RGB888);
+    for (int i = 0, j = 0; i < CAMERA_WIDTH * CAMERA_HEIGHT * 2; i += 4, j += 2)
+    {
+        int y0 = yuyv[i], u = yuyv[i + 1], y1 = yuyv[i + 2], v = yuyv[i + 3];
+        auto yuv2rgb = [](int y, int u, int v)
+        {
+            int r = y + 1.402 * (v - 128);
+            int g = y - 0.344136 * (u - 128) - 0.714136 * (v - 128);
+            int b = y + 1.772 * (u - 128);
+            return qRgb(qBound(0, r, 255), qBound(0, g, 255), qBound(0, b, 255));
+        };
+        int px = (j % CAMERA_WIDTH), py = (j / CAMERA_WIDTH);
+        img.setPixel(px, py, yuv2rgb(y0, u, v));
+        img.setPixel(px + 1, py, yuv2rgb(y1, u, v));
+    }
+    // 将抓拍的图像显示到 snapShotArea
+    QLabel *imgLabel = new QLabel(ui->snapShotArea);
+    QSize thumbSize(200, 150);
+    imgLabel->setPixmap(QPixmap::fromImage(img).scaled(thumbSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    QVBoxLayout *snapLayout = qobject_cast<QVBoxLayout *>(ui->snapShotArea->layout());
+    if (snapLayout)
+        snapLayout->addWidget(imgLabel);
+    if (ioctl(v4l2_fd, VIDIOC_QBUF, &buf) < 0)
+    {
+        QString errMsg = QString("VIDIOC_QBUF failed: %1").arg(strerror(errno));
+        Log::error(errMsg.toStdString());
+        QMessageBox::warning(this, "ioctl error", errMsg);
+    }
+}
+
+void mainwin::on_closeCameraButton_clicked()
+{
+    // 关闭摄像头并释放资源
+    if (v4l2_timer)
+        v4l2_timer->stop();
+    if (v4l2_fd >= 0)
+    {
+        enum v4l2_buf_type type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        if (ioctl(v4l2_fd, VIDIOC_STREAMOFF, &type) < 0)
+        {
+            QString errMsg = QString("VIDIOC_STREAMOFF failed: %1").arg(strerror(errno));
+            Log::error(errMsg.toStdString());
+            QMessageBox::warning(this, "ioctl error", errMsg);
+        }
+        for (int i = 0; i < V4L2_BUFFER_COUNT; ++i)
+        {
+            if (v4l2_buffers[i].start)
+                munmap(v4l2_buffers[i].start, v4l2_buffers[i].length);
+            v4l2_buffers[i].start = nullptr;
+            v4l2_buffers[i].length = 0;
+        }
+        close(v4l2_fd);
+        v4l2_fd = -1;
+    }
+}
+#endif

@@ -16,7 +16,8 @@
     "array": "cpp",
     "string_view": "cpp",
     "initializer_list": "cpp",
-    "utility": "cpp"
+    "utility": "cpp",
+    "cstring": "cpp"
   },
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": true,

@@ -32,9 +32,23 @@ private:
 
     usermanagewin *userManageWin; // 用户管理窗口
 
+#if defined(Q_OS_WIN)
     QCamera *camera = nullptr;                   // 摄像头
     QCameraViewfinder *viewfinder = nullptr;     // 取景器
     QCameraImageCapture *imageCapture = nullptr; // 抓拍
+#elif defined(Q_OS_LINUX)
+#include <QTimer>
+#include <QLabel> // 添加 QLabel 头文件
+#define V4L2_BUFFER_COUNT 4
+    int v4l2_fd = -1;
+    QTimer *v4l2_timer = nullptr;
+    QLabel *cameraDisplayLabel = nullptr; // 用于显示摄像头画面的 QLabel
+    struct
+    {
+        void *start;
+        size_t length;
+    } v4l2_buffers[V4L2_BUFFER_COUNT];
+#endif
 };
 
 #endif // MAINWIN_H

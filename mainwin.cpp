@@ -3,11 +3,11 @@
 #define CAMERA_SET_WIDTH 800
 #define CAMERA_SET_HEIGHT 480
 
+#include "Log.h"
 #include "mainwin.h"
 #include "ui_mainwin.h"
 #include <QVBoxLayout>
 #include <QMessageBox>
-#include "Log.h"
 #if defined(Q_OS_WIN)
 #include <QCameraInfo>
 #include <QCamera>
@@ -38,6 +38,26 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(viewfinder);
     ui->cameraDisplay->setLayout(layout);
+
+    // 确保 snapShotArea 有 QVBoxLayout
+    if (!ui->snapShotArea->layout())
+    {
+        QVBoxLayout *snapLayout = new QVBoxLayout(ui->snapShotArea);
+        snapLayout->setContentsMargins(0, 0, 0, 0);
+        ui->snapShotArea->setLayout(snapLayout);
+    }
+    else
+    {
+        // 检查类型，不是 QVBoxLayout 也替换
+        QVBoxLayout *testLayout = qobject_cast<QVBoxLayout *>(ui->snapShotArea->layout());
+        if (!testLayout)
+        {
+            delete ui->snapShotArea->layout();
+            QVBoxLayout *snapLayout = new QVBoxLayout(ui->snapShotArea);
+            snapLayout->setContentsMargins(0, 0, 0, 0);
+            ui->snapShotArea->setLayout(snapLayout);
+        }
+    }
 
     // 枚举摄像头并填充下拉框
     QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
@@ -124,38 +144,68 @@ void mainwin::on_openCameraButton_clicked()
     }
     int index = ui->cameraComboBox->currentIndex();
     QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+    qDebug() << "[on_openCameraButton_clicked] cameras count:" << cameras.size() << ", index:" << index;
     if (cameras.isEmpty() || index < 0 || index >= cameras.size())
     {
+        qDebug() << "[on_openCameraButton_clicked] No camera found or invalid index.";
         // 可根据需要弹窗提示无摄像头
         return;
     }
     camera = new QCamera(cameras.at(index), this);
+    qDebug() << "[on_openCameraButton_clicked] Created QCamera for device:" << cameras.at(index).deviceName();
     camera->setViewfinder(viewfinder);
     if (imageCapture)
     {
         // 断开旧的 imageCaptured 信号，防止重复
         disconnect(imageCapture, nullptr, this, nullptr);
         delete imageCapture;
+        qDebug() << "[on_openCameraButton_clicked] Deleted old imageCapture.";
     }
     imageCapture = new QCameraImageCapture(camera, this);
-    connect(imageCapture, &QCameraImageCapture::imageCaptured, this, [this](int, const QImage &image)
+    qDebug() << "[on_openCameraButton_clicked] Created new QCameraImageCapture.";
+    connect(imageCapture, &QCameraImageCapture::imageCaptured, this, [this](int id, const QImage &image)
             {
+        qDebug() << "[imageCaptured] id:" << id << ", image size:" << image.size();
         QLabel *imgLabel = new QLabel(ui->snapShotArea);
-        QSize thumbSize(200, 150); // 统一缩略图尺寸
+        QSize thumbSize(160, 120); // 统一缩略图尺寸
         imgLabel->setPixmap(QPixmap::fromImage(image).scaled(thumbSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         QVBoxLayout *snapLayout = qobject_cast<QVBoxLayout*>(ui->snapShotArea->layout());
         if (snapLayout) {
             snapLayout->addWidget(imgLabel);
+            qDebug() << "[imageCaptured] Added snapshot to snapShotArea.";
         } });
     camera->start();
 }
 
 void mainwin::on_snapButton_clicked()
 {
-    if (camera && imageCapture && camera->state() == QCamera::ActiveState)
+    if (!camera || !imageCapture)
     {
-        imageCapture->capture();
+        QMessageBox::warning(this, "Error", "Camera not initialized");
+        return;
     }
+
+    if (camera->state() != QCamera::ActiveState)
+    {
+        QMessageBox::warning(this, "Error", "Camera is not active");
+        return;
+    }
+
+    // 连接错误信号
+    connect(imageCapture, QOverload<int, QCameraImageCapture::Error, const QString &>::of(&QCameraImageCapture::error),
+            this, [this](int id, QCameraImageCapture::Error error, const QString &errorString)
+            {
+                Q_UNUSED(id);
+                QMessageBox::warning(this, "Capture Error",
+                    QString("Failed to capture image: %1").arg(errorString)); });
+
+    // 连接捕获完成信号
+    connect(imageCapture, &QCameraImageCapture::imageSaved, this, [this](int id, const QString &fileName)
+            {
+        Q_UNUSED(id);
+        statusBar()->showMessage(QString("Image saved to %1").arg(fileName), 3000); });
+
+    imageCapture->capture();
 }
 
 void mainwin::on_closeCameraButton_clicked()
@@ -287,6 +337,7 @@ void mainwin::on_openCameraButton_clicked()
 void mainwin::on_snapButton_clicked()
 {
     // 单帧采集：出队、显示、再入队
+    Log << "Snap button clicked, capturing a single frame." << std::endl;
     if (v4l2_fd < 0)
         return;
     v4l2_buffer buf;
@@ -311,7 +362,7 @@ void mainwin::on_snapButton_clicked()
     }
     // 将抓拍的图像显示到 snapShotArea
     QLabel *imgLabel = new QLabel(ui->snapShotArea);
-    QSize thumbSize(200, 150);
+    QSize thumbSize(160, 120);
     imgLabel->setPixmap(QPixmap::fromImage(img).scaled(thumbSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     QVBoxLayout *snapLayout = qobject_cast<QVBoxLayout *>(ui->snapShotArea->layout());
     if (snapLayout)

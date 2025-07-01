@@ -43,7 +43,7 @@ void login::initializeDatabase()
     else
     {
         db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName("D:/University/Yue inlay/oceanSystem.db");
+        db.setDatabaseName("D:/University/yue_inlay/oceanSystem.db");
     }
 
     if (!db.open())

@@ -19,7 +19,7 @@ usermanagewin::usermanagewin(QWidget *parent) : QMainWindow(parent),
     else
     {
         db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName("D:/University/Yue inlay/oceanSystem.db");
+        db.setDatabaseName("D:/University/yue_inlay/oceanSystem.db");
     }
 
     if (!db.open())
@@ -71,7 +71,7 @@ void usermanagewin::refreshTable(const QString &usernameFilter)
         QMessageBox::critical(this, "查询失败", query.lastError().text());
         return;
     }
-    QIcon icon("D:/University/Yue inlay/qt/oceanSystem/resources/user.png");
+    QIcon icon("D:/University/yue_inlay/qt/oceanSystem/resources/user.png");
     int row = 0;
     ui->tableWidget->setIconSize(QSize(32, 32));
     while (query.next())

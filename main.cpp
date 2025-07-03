@@ -16,6 +16,10 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &context, const Q
         fprintf(stderr, "%sDebug: %s\n", prefix.toUtf8().constData(), localMsg.constData());
         fflush(stderr);
         break;
+    case QtInfoMsg:
+        fprintf(stderr, "%sInfo: %s\n", prefix.toUtf8().constData(), localMsg.constData());
+        fflush(stderr);
+        break;
     case QtWarningMsg:
         fprintf(stderr, "%sWarning: %s\n", prefix.toUtf8().constData(), localMsg.constData());
         fflush(stderr);

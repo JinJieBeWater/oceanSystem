@@ -5,6 +5,8 @@
 #include <QCamera>
 #include <QCameraViewfinder>
 #include <QCameraImageCapture>
+#include <QTcpServer>
+#include <QTcpSocket>
 
 #include "usermanagewin.h"
 
@@ -13,6 +15,7 @@ namespace Ui
     class mainwin;
 }
 
+class TcpServer;
 class mainwin : public QMainWindow
 {
     Q_OBJECT
@@ -32,6 +35,9 @@ private:
 
     usermanagewin *userManageWin; // 用户管理窗口
 
+    // TCP服务端
+    TcpServer *tcpServer = nullptr;
+
 #if defined(Q_OS_WIN)
     QCamera *camera = nullptr;                   // 摄像头
     QCameraViewfinder *viewfinder = nullptr;     // 取景器
@@ -49,6 +55,10 @@ private:
         size_t length;
     } v4l2_buffers[V4L2_BUFFER_COUNT];
 #endif
+
+private slots:
+    void onTcpDataReceived(QTcpSocket *client, const QByteArray &data);
+    void on_uploadTHDataBtn_clicked();
 };
 
 #endif // MAINWIN_H

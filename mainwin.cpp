@@ -5,9 +5,13 @@
 
 #include <QDebug>
 #include "mainwin.h"
+#include "libs/tcpserver.h"
 #include "ui_mainwin.h"
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QTime>
 #if defined(Q_OS_WIN)
 #include <QCameraInfo>
 #include <QCamera>
@@ -30,6 +34,18 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
 {
     ui->setupUi(this);
     userManageWin = new usermanagewin(this);
+
+    // 初始化TCP服务端，监听端口6666
+    tcpServer = new TcpServer(this);
+    connect(tcpServer, &TcpServer::dataReceived, this, &mainwin::onTcpDataReceived);
+    if (!tcpServer->startServer(6666))
+    {
+        QMessageBox::warning(this, "TCP服务端启动失败", "无法监听6666端口");
+    }
+    else
+    {
+        statusBar()->showMessage("TCP服务端已启动，端口6666");
+    }
 
 #if defined(Q_OS_WIN)
     // Windows 摄像头相关初始化
@@ -123,7 +139,32 @@ mainwin::~mainwin()
         cameraDisplayLabel = nullptr;
     }
 #endif
+    if (tcpServer)
+    {
+        tcpServer->stopServer();
+    }
     delete ui;
+}
+
+// TCP数据接收槽函数
+void mainwin::onTcpDataReceived(QTcpSocket *client, const QByteArray &data)
+{
+    Q_UNUSED(client);
+    // 假设数据格式为 "T:23.5;H:56.7"，T为温度，H为湿度
+    QString str = QString::fromUtf8(data).trimmed();
+    QRegExp rx("T:([0-9.]+);H:([0-9.]+)");
+    if (rx.indexIn(str) != -1)
+    {
+        QString temp = rx.cap(1);
+        QString hum = rx.cap(2);
+        ui->temperatureShow->setText(temp);
+        ui->humidityShow->setText(hum);
+        statusBar()->showMessage(QString("收到温湿度: %1°C, %2%RH").arg(temp, hum), 3000);
+    }
+    else
+    {
+        statusBar()->showMessage("收到未知数据: " + str, 3000);
+    }
 }
 
 void mainwin::on_userManageButton_clicked()
@@ -193,7 +234,7 @@ void mainwin::on_snapButton_clicked()
 
     // 连接错误信号
     connect(imageCapture, QOverload<int, QCameraImageCapture::Error, const QString &>::of(&QCameraImageCapture::error),
-            this, [this](int id, QCameraImageCapture::Error error, const QString &errorString)
+            this, [this](int id, QCameraImageCapture::Error /*error*/, const QString &errorString)
             {
                 Q_UNUSED(id);
                 QMessageBox::warning(this, "Capture Error",
@@ -401,3 +442,29 @@ void mainwin::on_closeCameraButton_clicked()
     }
 }
 #endif
+
+void mainwin::on_uploadTHDataBtn_clicked()
+{
+    // 创建客户端socket
+    QTcpSocket *client = new QTcpSocket(this);
+    client->connectToHost("127.0.0.1", 6666);
+    if (!client->waitForConnected(1000))
+    {
+        QMessageBox::warning(this, "连接失败", "无法连接到本地TCP服务端: 6666");
+        client->deleteLater();
+        return;
+    }
+    // 随机生成温湿度数据
+    qsrand(static_cast<uint>(QTime::currentTime().msec() + QTime::currentTime().second() * 1000));
+    double tempVal = 20.0 + (qrand() % 1500) / 100.0; // 20.00~34.99
+    double humVal = 30.0 + (qrand() % 7000) / 100.0;  // 30.00~99.99
+    QString temp = QString::number(tempVal, 'f', 2);
+    QString hum = QString::number(humVal, 'f', 2);
+    QString msg = QString("T:%1;H:%2").arg(temp, hum);
+    client->write(msg.toUtf8());
+    client->flush();
+    client->waitForBytesWritten(500);
+    client->disconnectFromHost();
+    client->deleteLater();
+    statusBar()->showMessage("随机温湿度数据已上传: " + msg, 3000);
+}

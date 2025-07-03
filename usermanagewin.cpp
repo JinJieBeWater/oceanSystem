@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QTableWidgetItem>
 
-#include "Log.h"
+#include <QDebug>
 
 usermanagewin::usermanagewin(QWidget *parent) : QMainWindow(parent),
                                                 ui(new Ui::usermanagewin)
@@ -26,11 +26,11 @@ usermanagewin::usermanagewin(QWidget *parent) : QMainWindow(parent),
     {
         QMessageBox::critical(this, "Database Error",
                               "Failed to open the database!\n" + db.lastError().text());
-        Log() << "Database error: " << db.lastError().text();
+        qDebug() << "Database error: " << db.lastError().text();
     }
     else
     {
-        Log() << "Database opened successfully.";
+        qDebug() << "Database opened successfully.";
     }
     refreshTable();
 }

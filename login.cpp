@@ -7,7 +7,7 @@
 
 #include "mainwin.h"
 #include "signupdialog.h"
-#include "Log.h"
+#include <QDebug>
 
 login::login(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::login)
@@ -50,11 +50,11 @@ void login::initializeDatabase()
     {
         QMessageBox::critical(this, "Database Error",
                               "Failed to open the database!\n" + db.lastError().text());
-        Log() << "Database error: " << db.lastError().text();
+        qDebug() << "Database error: " << db.lastError().text();
     }
     else
     {
-        Log() << "Database opened successfully.";
+        qDebug() << "Database opened successfully.";
         createTables(); // 确保表存在
     }
 }
@@ -67,7 +67,7 @@ void login::createTables()
                     "username TEXT UNIQUE NOT NULL, "
                     "password TEXT NOT NULL)"))
     {
-        Log() << "Table creation error: " << query.lastError().text();
+        qDebug() << "Table creation error: " << query.lastError().text();
         QMessageBox::critical(this, "Database Error",
                               "Failed to create tables!\n" + query.lastError().text());
     }
@@ -97,9 +97,9 @@ void login::on_signInBtn_clicked()
 
     if (!query.exec())
     {
-        Log() << "Login query error: " << query.lastError().text()
-              << "\nQuery: " << query.lastQuery()
-              << "\nBound values: " << query.boundValues();
+        qDebug() << "Login query error: " << query.lastError().text()
+                 << "\nQuery: " << query.lastQuery()
+                 << "\nBound values: " << query.boundValues();
         QMessageBox::critical(this, "Database Error",
                               "Query failed!\n" + query.lastError().text());
         return;
@@ -107,14 +107,14 @@ void login::on_signInBtn_clicked()
 
     if (query.next())
     {
-        Log() << "User" << username << "logged in successfully";
+        qDebug() << "User" << username << "logged in successfully";
         speech->say("Sign In successful!");
         mainWin->show();
         this->hide();
     }
     else
     {
-        Log() << "Failed login attempt for user" << username;
+        qDebug() << "Failed login attempt for user" << username;
         QMessageBox::critical(this, "Error", "Invalid username or password!");
     }
 }

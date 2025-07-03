@@ -6,7 +6,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QMessageBox>
-#include "Log.h"
+#include <QDebug>
 
 namespace Ui
 {

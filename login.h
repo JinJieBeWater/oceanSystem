@@ -5,7 +5,7 @@
 #include <QTextToSpeech>
 #include <QSqlDatabase>
 
-#include "Log.h"
+#include <QDebug>
 #include "mainwin.h"
 
 QT_BEGIN_NAMESPACE

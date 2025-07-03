@@ -3,7 +3,7 @@
 #define CAMERA_SET_WIDTH 800
 #define CAMERA_SET_HEIGHT 480
 
-#include "Log.h"
+#include <QDebug>
 #include "mainwin.h"
 #include "ui_mainwin.h"
 #include <QVBoxLayout>
@@ -240,7 +240,7 @@ void mainwin::on_openCameraButton_clicked()
     if (ioctl(v4l2_fd, VIDIOC_S_FMT, &vfmt) < 0)
     {
         QString errMsg = QString("VIDIOC_S_FMT failed: %1").arg(strerror(errno));
-        Log::error(errMsg.toStdString());
+        qDebug::error(errMsg.toStdString());
         QMessageBox::warning(this, "ioctl error", errMsg);
     }
 
@@ -253,7 +253,7 @@ void mainwin::on_openCameraButton_clicked()
     if (ioctl(v4l2_fd, VIDIOC_REQBUFS, &req) < 0)
     {
         QString errMsg = QString("VIDIOC_REQBUFS failed: %1").arg(strerror(errno));
-        Log::error(errMsg.toStdString());
+        qDebug::error(errMsg.toStdString());
         QMessageBox::warning(this, "ioctl error", errMsg);
     }
 
@@ -268,7 +268,7 @@ void mainwin::on_openCameraButton_clicked()
         if (ioctl(v4l2_fd, VIDIOC_QUERYBUF, &buf) < 0)
         {
             QString errMsg = QString("VIDIOC_QUERYBUF failed: %1").arg(strerror(errno));
-            Log::error(errMsg.toStdString());
+            qDebug::error(errMsg.toStdString());
             QMessageBox::warning(this, "ioctl error", errMsg);
         }
         v4l2_buffers[i].length = buf.length;
@@ -286,7 +286,7 @@ void mainwin::on_openCameraButton_clicked()
         if (ioctl(v4l2_fd, VIDIOC_QBUF, &buf) < 0)
         {
             QString errMsg = QString("VIDIOC_QBUF failed: %1").arg(strerror(errno));
-            Log::error(errMsg.toStdString());
+            qDebug::error(errMsg.toStdString());
             QMessageBox::warning(this, "ioctl error", errMsg);
         }
     }
@@ -296,7 +296,7 @@ void mainwin::on_openCameraButton_clicked()
     if (ioctl(v4l2_fd, VIDIOC_STREAMON, &type) < 0)
     {
         QString errMsg = QString("VIDIOC_STREAMON failed: %1").arg(strerror(errno));
-        Log::error(errMsg.toStdString());
+        qDebug::error(errMsg.toStdString());
         QMessageBox::warning(this, "ioctl error", errMsg);
     }
 
@@ -327,7 +327,7 @@ void mainwin::on_openCameraButton_clicked()
             // 9. 再次入队
             if (ioctl(v4l2_fd, VIDIOC_QBUF, &buf) < 0) {
                 QString errMsg = QString("VIDIOC_QBUF failed: %1").arg(strerror(errno));
-                Log::error(errMsg.toStdString());
+                qDebug::error(errMsg.toStdString());
                 QMessageBox::warning(this, "ioctl error", errMsg);
             } });
     }
@@ -337,7 +337,7 @@ void mainwin::on_openCameraButton_clicked()
 void mainwin::on_snapButton_clicked()
 {
     // 单帧采集：出队、显示、再入队
-    Log << "Snap button clicked, capturing a single frame." << std::endl;
+    qDebug << "Snap button clicked, capturing a single frame." << std::endl;
     if (v4l2_fd < 0)
         return;
     v4l2_buffer buf;
@@ -347,7 +347,7 @@ void mainwin::on_snapButton_clicked()
     if (ioctl(v4l2_fd, VIDIOC_DQBUF, &buf) < 0)
     {
         QString errMsg = QString("VIDIOC_DQBUF failed: %1").arg(strerror(errno));
-        Log::error(errMsg.toStdString());
+        qDebug::error(errMsg.toStdString());
         QMessageBox::warning(this, "ioctl error", errMsg);
         return;
     }
@@ -370,7 +370,7 @@ void mainwin::on_snapButton_clicked()
     if (ioctl(v4l2_fd, VIDIOC_QBUF, &buf) < 0)
     {
         QString errMsg = QString("VIDIOC_QBUF failed: %1").arg(strerror(errno));
-        Log::error(errMsg.toStdString());
+        qDebug::error(errMsg.toStdString());
         QMessageBox::warning(this, "ioctl error", errMsg);
     }
 }
@@ -386,7 +386,7 @@ void mainwin::on_closeCameraButton_clicked()
         if (ioctl(v4l2_fd, VIDIOC_STREAMOFF, &type) < 0)
         {
             QString errMsg = QString("VIDIOC_STREAMOFF failed: %1").arg(strerror(errno));
-            Log::error(errMsg.toStdString());
+            qDebug::error(errMsg.toStdString());
             QMessageBox::warning(this, "ioctl error", errMsg);
         }
         for (int i = 0; i < V4L2_BUFFER_COUNT; ++i)

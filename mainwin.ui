@@ -195,7 +195,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="ctrlMotorBtn">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -216,7 +216,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="ctrlLedBtn">
           <property name="minimumSize">
            <size>
             <width>0</width>

@@ -12,6 +12,8 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTime>
+#include <QMap>
+
 #if defined(Q_OS_WIN)
 #include <QCameraInfo>
 #include <QCamera>
@@ -38,6 +40,9 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
     // 初始化TCP服务端，监听端口6666
     tcpServer = new TcpServer(this);
     connect(tcpServer, &TcpServer::dataReceived, this, &mainwin::onTcpDataReceived);
+    // 新增：监听新客户端连接
+    connect(tcpServer, &TcpServer::newClientConnected, this, &mainwin::onNewClientConnected);
+    connect(tcpServer, &TcpServer::clientDisconnected, this, &mainwin::onClientDisconnected);
     if (!tcpServer->startServer(6666))
     {
         QMessageBox::warning(this, "TCP服务端启动失败", "无法监听6666端口");
@@ -165,6 +170,23 @@ void mainwin::onTcpDataReceived(QTcpSocket *client, const QByteArray &data)
     {
         statusBar()->showMessage("收到未知数据: " + str, 3000);
     }
+}
+
+// 新增：客户端连接/断开处理
+void mainwin::onNewClientConnected(QTcpSocket *client)
+{
+    QString key = QString("%1:%2").arg(client->peerAddress().toString()).arg(client->peerPort());
+    clientMap[key] = client;
+    ui->socketsComboBox->addItem(key);
+}
+
+void mainwin::onClientDisconnected(QTcpSocket *client)
+{
+    QString key = QString("%1:%2").arg(client->peerAddress().toString()).arg(client->peerPort());
+    clientMap.remove(key);
+    int idx = ui->socketsComboBox->findText(key);
+    if (idx >= 0)
+        ui->socketsComboBox->removeItem(idx);
 }
 
 void mainwin::on_userManageButton_clicked()
@@ -467,4 +489,46 @@ void mainwin::on_uploadTHDataBtn_clicked()
     client->disconnectFromHost();
     client->deleteLater();
     statusBar()->showMessage("随机温湿度数据已上传: " + msg, 3000);
+}
+
+void mainwin::on_addConnectBtn_clicked()
+{
+    // 获取用户输入的IP和端口（假设有对应的输入框）
+    QString ip = ui->ipAddEdit ? ui->ipAddEdit->text() : "127.0.0.1";
+    quint16 port = ui->portAddEdit ? ui->portAddEdit->text().toUShort() : 6666;
+
+    QTcpSocket *client = new QTcpSocket(this);
+    client->connectToHost(ip, port);
+    if (!client->waitForConnected(1000))
+    {
+        QMessageBox::warning(this, "连接失败", QString("无法连接到服务器: %1:%2").arg(ip).arg(port));
+        client->deleteLater();
+        return;
+    }
+    // 连接成功，可以保存连接信息或提示
+    statusBar()->showMessage(QString("成功连接到服务器: %1:%2").arg(ip).arg(port), 3000);
+    QMessageBox::information(this, "连接成功", QString("已成功连接到服务器: %1:%2").arg(ip).arg(port));
+    client->disconnectFromHost();
+    client->deleteLater();
+}
+
+void mainwin::on_sendCommandBtn_clicked()
+{
+    // 获取选中的客户端
+    QString key = ui->socketsComboBox->currentText();
+    if (!clientMap.contains(key))
+    {
+        QMessageBox::warning(this, "错误", "未选择有效客户端");
+        return;
+    }
+    QTcpSocket *client = clientMap[key];
+    QString cmd = ui->sendCommandTextEdit->toPlainText();
+    if (cmd.isEmpty())
+    {
+        QMessageBox::warning(this, "错误", "命令内容为空");
+        return;
+    }
+    client->write(cmd.toUtf8());
+    client->flush();
+    statusBar()->showMessage("命令已发送: " + cmd, 3000);
 }

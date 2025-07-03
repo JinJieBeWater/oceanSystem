@@ -66,8 +66,10 @@
           </property>
           <property name="font">
            <font>
-            <family>隶书</family>
-            <pointsize>18</pointsize>
+            <family>翩翩体-简</family>
+            <pointsize>16</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -116,8 +118,8 @@
             </property>
             <property name="font">
              <font>
-              <family>隶书</family>
-              <pointsize>16</pointsize>
+              <family>翩翩体-简</family>
+              <pointsize>14</pointsize>
              </font>
             </property>
             <property name="text">
@@ -135,8 +137,8 @@
             </property>
             <property name="font">
              <font>
-              <family>隶书</family>
-              <pointsize>16</pointsize>
+              <family>翩翩体-简</family>
+              <pointsize>14</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -200,8 +202,8 @@
             </property>
             <property name="font">
              <font>
-              <family>隶书</family>
-              <pointsize>16</pointsize>
+              <family>翩翩体-简</family>
+              <pointsize>14</pointsize>
              </font>
             </property>
             <property name="text">
@@ -219,8 +221,8 @@
             </property>
             <property name="font">
              <font>
-              <family>隶书</family>
-              <pointsize>16</pointsize>
+              <family>翩翩体-简</family>
+              <pointsize>14</pointsize>
              </font>
             </property>
             <property name="styleSheet">
@@ -285,8 +287,8 @@
           </property>
           <property name="font">
            <font>
-            <family>隶书</family>
-            <pointsize>16</pointsize>
+            <family>翩翩体-简</family>
+            <pointsize>14</pointsize>
            </font>
           </property>
           <property name="text">
@@ -314,8 +316,8 @@
          <widget class="QPushButton" name="signUpBtn">
           <property name="font">
            <font>
-            <family>隶书</family>
-            <pointsize>16</pointsize>
+            <family>翩翩体-简</family>
+            <pointsize>14</pointsize>
            </font>
           </property>
           <property name="text">

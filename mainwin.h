@@ -6,7 +6,10 @@
 #include <QCameraViewfinder>
 #include <QCameraImageCapture>
 #include <QTcpServer>
+
 #include <QTcpSocket>
+#include <QMap>
+#include <QString>
 
 #include "usermanagewin.h"
 
@@ -38,6 +41,9 @@ private:
     // TCP服务端
     TcpServer *tcpServer = nullptr;
 
+    // 保存所有已连接客户端
+    QMap<QString, QTcpSocket *> clientMap;
+
 #if defined(Q_OS_WIN)
     QCamera *camera = nullptr;                   // 摄像头
     QCameraViewfinder *viewfinder = nullptr;     // 取景器
@@ -59,6 +65,10 @@ private:
 private slots:
     void onTcpDataReceived(QTcpSocket *client, const QByteArray &data);
     void on_uploadTHDataBtn_clicked();
+    void on_addConnectBtn_clicked();
+    void on_sendCommandBtn_clicked();
+    void onNewClientConnected(QTcpSocket *client);
+    void onClientDisconnected(QTcpSocket *client);
 };
 
 #endif // MAINWIN_H

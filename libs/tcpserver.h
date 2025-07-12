@@ -14,9 +14,11 @@ public:
     ~TcpServer();
 
     bool startServer(quint16 port);
+    bool startServer(quint16 port, const QString &ip = QString());
     void stopServer();
     void sendMessageToClient(QTcpSocket *client, const QByteArray &data);
     void broadcastMessage(const QByteArray &data);
+    bool isListening() const;
 
 signals:
     void newClientConnected(QTcpSocket *clientSocket);
@@ -31,7 +33,7 @@ private slots:
 
 private:
     QTcpServer *m_tcpServer;
-    QList<QTcpSocket*> m_clients;
+    QList<QTcpSocket *> m_clients;
 };
 
 #endif // TCPSERVER_H

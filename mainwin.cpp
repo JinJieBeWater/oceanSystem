@@ -2,6 +2,8 @@
 #define CAMERA_HEIGHT 480
 #define CAMERA_SET_WIDTH 800
 #define CAMERA_SET_HEIGHT 480
+#define TCP_SERVER_PORT 6666
+#define LOCAL_HOST_IP "192.168.14.49"
 
 #include <QDebug>
 #include "mainwin.h"
@@ -13,6 +15,7 @@
 #include <QTcpSocket>
 #include <QTime>
 #include <QMap>
+#include <QScrollBar>
 
 #if defined(Q_OS_WIN)
 #include <QCameraInfo>
@@ -37,20 +40,18 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
     ui->setupUi(this);
     userManageWin = new usermanagewin(this);
 
-    // 初始化TCP服务端，监听端口6666
+    // 初始化TCP服务端对象，但不自动启动，受控于按钮
     tcpServer = new TcpServer(this);
     connect(tcpServer, &TcpServer::dataReceived, this, &mainwin::onTcpDataReceived);
-    // 新增：监听新客户端连接
     connect(tcpServer, &TcpServer::newClientConnected, this, &mainwin::onNewClientConnected);
     connect(tcpServer, &TcpServer::clientDisconnected, this, &mainwin::onClientDisconnected);
-    if (!tcpServer->startServer(6666))
-    {
-        QMessageBox::warning(this, "TCP服务端启动失败", "无法监听6666端口");
-    }
-    else
-    {
-        statusBar()->showMessage("TCP服务端已启动，端口6666");
-    }
+    // 不自动启动，等待用户点击 startServerBtn
+    // 设置默认的TCP服务端ip
+    if (ui->serverIpEdit)
+        ui->serverIpEdit->setText(LOCAL_HOST_IP);
+    // 可在UI初始化时设置默认端口
+    if (ui->serverPortEdit)
+        ui->serverPortEdit->setText(QString::number(TCP_SERVER_PORT));
 
 #if defined(Q_OS_WIN)
     // Windows 摄像头相关初始化
@@ -110,6 +111,55 @@ mainwin::mainwin(QWidget *parent) : QMainWindow(parent),
 #endif
 }
 
+// 服务端启动按钮槽函数
+void mainwin::on_startServerBtn_clicked()
+{
+    if (!tcpServer)
+        return;
+    QString ip = ui->serverIpEdit ? ui->serverIpEdit->text().trimmed() : LOCAL_HOST_IP;
+    quint16 port = ui->serverPortEdit ? ui->serverPortEdit->text().toUShort() : TCP_SERVER_PORT;
+    if (tcpServer->isListening())
+    {
+        QMessageBox::information(this, "提示", "服务端已在监听中");
+        return;
+    }
+    if (!tcpServer->startServer(port, ip))
+    {
+        QMessageBox::warning(this, "TCP服务端启动失败", QString("无法监听 %1:%2").arg(ip).arg(port));
+    }
+    else
+    {
+        statusBar()->showMessage(QString("TCP服务端已启动，监听 %1:%2").arg(ip).arg(port), 3000);
+        QMessageBox::information(this, "启动成功", QString("服务端已启动: %1:%2").arg(ip).arg(port));
+    }
+}
+
+// 服务端关闭按钮槽函数
+void mainwin::on_closeServerBtn_clicked()
+{
+    if (!tcpServer)
+        return;
+    if (!tcpServer->isListening())
+    {
+        QMessageBox::information(this, "提示", "服务端未在监听");
+        return;
+    }
+    tcpServer->stopServer();
+    statusBar()->showMessage("服务端已关闭", 3000);
+    QMessageBox::information(this, "关闭成功", "服务端已关闭");
+    // 清空所有客户端
+    for (auto it = clientMap.begin(); it != clientMap.end(); ++it)
+    {
+        if (it.value())
+        {
+            it.value()->disconnectFromHost();
+            it.value()->deleteLater();
+        }
+    }
+    clientMap.clear();
+    ui->socketsComboBox->clear();
+}
+
 mainwin::~mainwin()
 {
 #if defined(Q_OS_WIN)
@@ -154,9 +204,19 @@ mainwin::~mainwin()
 // TCP数据接收槽函数
 void mainwin::onTcpDataReceived(QTcpSocket *client, const QByteArray &data)
 {
-    Q_UNUSED(client);
     // 假设数据格式为 "T:23.5;H:56.7"，T为温度，H为湿度
     QString str = QString::fromUtf8(data).trimmed();
+    // 显示到命令显示区
+    if (ui->commandShowArea)
+    {
+        QString from = client ? client->peerAddress().toString() : "未知";
+        if (from.startsWith("::ffff:"))
+            from = from.mid(7);
+        QString oldText = ui->commandShowArea->toPlainText();
+        QString newText = oldText + QString("[来自%1:%2] %3\n").arg(from).arg(client ? client->peerPort() : 0).arg(str);
+        ui->commandShowArea->setPlainText(newText);
+        ui->commandShowArea->verticalScrollBar()->setValue(ui->commandShowArea->verticalScrollBar()->maximum());
+    }
     QRegExp rx("T:([0-9.]+);H:([0-9.]+)");
     if (rx.indexIn(str) != -1)
     {
@@ -166,23 +226,26 @@ void mainwin::onTcpDataReceived(QTcpSocket *client, const QByteArray &data)
         ui->humidityShow->setText(hum);
         statusBar()->showMessage(QString("收到温湿度: %1°C, %2%RH").arg(temp, hum), 3000);
     }
-    else
-    {
-        statusBar()->showMessage("收到未知数据: " + str, 3000);
-    }
 }
 
 // 新增：客户端连接/断开处理
 void mainwin::onNewClientConnected(QTcpSocket *client)
 {
-    QString key = QString("%1:%2").arg(client->peerAddress().toString()).arg(client->peerPort());
+    QString ip = client->peerAddress().toString();
+    if (ip.startsWith("::ffff:"))
+        ip = ip.mid(7);
+    qDebug() << ip << ":" << client->peerPort();
+    QString key = QString("%1:%2").arg(ip).arg(client->peerPort());
     clientMap[key] = client;
     ui->socketsComboBox->addItem(key);
 }
 
 void mainwin::onClientDisconnected(QTcpSocket *client)
 {
-    QString key = QString("%1:%2").arg(client->peerAddress().toString()).arg(client->peerPort());
+    QString ip = client->peerAddress().toString();
+    if (ip.startsWith("::ffff:"))
+        ip = ip.mid(7);
+    QString key = QString("%1:%2").arg(ip).arg(client->peerPort());
     clientMap.remove(key);
     int idx = ui->socketsComboBox->findText(key);
     if (idx >= 0)
@@ -469,10 +532,10 @@ void mainwin::on_uploadTHDataBtn_clicked()
 {
     // 创建客户端socket
     QTcpSocket *client = new QTcpSocket(this);
-    client->connectToHost("127.0.0.1", 6666);
+    client->connectToHost(LOCAL_HOST_IP, TCP_SERVER_PORT);
     if (!client->waitForConnected(1000))
     {
-        QMessageBox::warning(this, "连接失败", "无法连接到本地TCP服务端: 6666");
+        QMessageBox::warning(this, "连接失败", QString("无法连接到本地TCP服务端: %1").arg(TCP_SERVER_PORT));
         client->deleteLater();
         return;
     }
@@ -494,22 +557,35 @@ void mainwin::on_uploadTHDataBtn_clicked()
 void mainwin::on_addConnectBtn_clicked()
 {
     // 获取用户输入的IP和端口（假设有对应的输入框）
-    QString ip = ui->ipAddEdit ? ui->ipAddEdit->text() : "127.0.0.1";
-    quint16 port = ui->portAddEdit ? ui->portAddEdit->text().toUShort() : 6666;
-
+    QString ip = ui->ipAddEdit ? ui->ipAddEdit->text() : LOCAL_HOST_IP;
+    quint16 port = ui->portAddEdit ? ui->portAddEdit->text().toUShort() : TCP_SERVER_PORT;
+    QString key = QString("%1:%2").arg(ip).arg(port);
+    if (clientMap.contains(key) && clientMap[key] && clientMap[key]->state() == QAbstractSocket::ConnectedState)
+    {
+        QMessageBox::information(this, "已连接", QString("已与服务器 %1 保持长连接").arg(key));
+        return;
+    }
+    // 若已存在但断开，先清理
+    if (clientMap.contains(key) && clientMap[key])
+    {
+        clientMap[key]->abort();
+        clientMap[key]->deleteLater();
+        clientMap.remove(key);
+    }
     QTcpSocket *client = new QTcpSocket(this);
     client->connectToHost(ip, port);
     if (!client->waitForConnected(1000))
     {
-        QMessageBox::warning(this, "连接失败", QString("无法连接到服务器: %1:%2").arg(ip).arg(port));
+        QMessageBox::warning(this, "连接失败", QString("无法连接到服务器: %1").arg(key));
         client->deleteLater();
         return;
     }
-    // 连接成功，可以保存连接信息或提示
-    statusBar()->showMessage(QString("成功连接到服务器: %1:%2").arg(ip).arg(port), 3000);
-    QMessageBox::information(this, "连接成功", QString("已成功连接到服务器: %1:%2").arg(ip).arg(port));
-    client->disconnectFromHost();
-    client->deleteLater();
+    clientMap[key] = client;
+    if (ui->socketsComboBox->findText(key) < 0)
+        ui->socketsComboBox->addItem(key);
+    statusBar()->showMessage(QString("成功建立长连接: %1").arg(key), 3000);
+    QMessageBox::information(this, "连接成功", QString("已成功建立长连接: %1").arg(key));
+    // 可在此处 connect client 的 readyRead 信号等，做后续通信
 }
 
 void mainwin::on_sendCommandBtn_clicked()
@@ -522,6 +598,11 @@ void mainwin::on_sendCommandBtn_clicked()
         return;
     }
     QTcpSocket *client = clientMap[key];
+    if (!client || client->state() != QAbstractSocket::ConnectedState)
+    {
+        QMessageBox::warning(this, "错误", "客户端已断开连接");
+        return;
+    }
     QString cmd = ui->sendCommandTextEdit->toPlainText();
     if (cmd.isEmpty())
     {
@@ -531,4 +612,37 @@ void mainwin::on_sendCommandBtn_clicked()
     client->write(cmd.toUtf8());
     client->flush();
     statusBar()->showMessage("命令已发送: " + cmd, 3000);
+}
+
+void mainwin::on_closeConnectionBtn_clicked()
+{
+    // 获取当前选中的客户端 key
+    QString key = ui->socketsComboBox->currentText();
+    if (!clientMap.contains(key))
+    {
+        QMessageBox::warning(this, "错误", "未选择有效客户端");
+        return;
+    }
+    QTcpSocket *client = clientMap[key];
+    if (!client)
+    {
+        QMessageBox::warning(this, "错误", "客户端对象无效");
+        clientMap.remove(key);
+        int idx = ui->socketsComboBox->findText(key);
+        if (idx >= 0)
+            ui->socketsComboBox->removeItem(idx);
+        return;
+    }
+    // 主动断开连接
+    client->disconnectFromHost();
+    if (client->state() != QAbstractSocket::UnconnectedState)
+    {
+        client->waitForDisconnected(1000);
+    }
+    client->deleteLater();
+    clientMap.remove(key);
+    int idx = ui->socketsComboBox->findText(key);
+    if (idx >= 0)
+        ui->socketsComboBox->removeItem(idx);
+    statusBar()->showMessage("已断开连接: " + key, 3000);
 }

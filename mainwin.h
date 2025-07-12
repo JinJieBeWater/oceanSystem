@@ -69,6 +69,9 @@ private slots:
     void on_sendCommandBtn_clicked();
     void onNewClientConnected(QTcpSocket *client);
     void onClientDisconnected(QTcpSocket *client);
+    void on_closeConnectionBtn_clicked();
+    void on_startServerBtn_clicked();
+    void on_closeServerBtn_clicked();
 };
 
 #endif // MAINWIN_H

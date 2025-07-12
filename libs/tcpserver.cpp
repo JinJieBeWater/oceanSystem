@@ -14,19 +14,35 @@ TcpServer::~TcpServer()
 
 bool TcpServer::startServer(quint16 port)
 {
-    if (m_tcpServer->listen(QHostAddress::Any, port)) {
-        qInfo() << "Server started on port" << port;
+    // 兼容旧接口，默认Any
+    return startServer(port, QString());
+}
+
+bool TcpServer::startServer(quint16 port, const QString &ip)
+{
+    QHostAddress addr = ip.isEmpty() ? QHostAddress::Any : QHostAddress(ip);
+    if (m_tcpServer->listen(addr, port))
+    {
+        qInfo() << "Server started on" << addr.toString() << ":" << port;
         return true;
-    } else {
+    }
+    else
+    {
         emit serverError(m_tcpServer->errorString());
         qWarning() << "Server failed to start:" << m_tcpServer->errorString();
         return false;
     }
 }
 
+bool TcpServer::isListening() const
+{
+    return m_tcpServer && m_tcpServer->isListening();
+}
+
 void TcpServer::stopServer()
 {
-    for (QTcpSocket *client : qAsConst(m_clients)) {
+    for (QTcpSocket *client : qAsConst(m_clients))
+    {
         client->disconnectFromHost();
     }
     m_tcpServer->close();
@@ -37,23 +53,27 @@ void TcpServer::stopServer()
 
 void TcpServer::sendMessageToClient(QTcpSocket *client, const QByteArray &data)
 {
-    if (client && client->state() == QAbstractSocket::ConnectedState) {
+    if (client && client->state() == QAbstractSocket::ConnectedState)
+    {
         client->write(data);
     }
 }
 
 void TcpServer::broadcastMessage(const QByteArray &data)
 {
-    for (QTcpSocket *client : qAsConst(m_clients)) {
+    for (QTcpSocket *client : qAsConst(m_clients))
+    {
         sendMessageToClient(client, data);
     }
 }
 
 void TcpServer::onNewConnection()
 {
-    while (m_tcpServer->hasPendingConnections()) {
+    while (m_tcpServer->hasPendingConnections())
+    {
         QTcpSocket *clientSocket = m_tcpServer->nextPendingConnection();
-        if (clientSocket) {
+        if (clientSocket)
+        {
             m_clients.append(clientSocket);
             connect(clientSocket, &QTcpSocket::readyRead, this, &TcpServer::onClientReadyRead);
             connect(clientSocket, &QTcpSocket::disconnected, this, &TcpServer::onClientDisconnected);
@@ -64,8 +84,9 @@ void TcpServer::onNewConnection()
 
 void TcpServer::onClientReadyRead()
 {
-    QTcpSocket *clientSocket = qobject_cast<QTcpSocket*>(sender());
-    if (clientSocket) {
+    QTcpSocket *clientSocket = qobject_cast<QTcpSocket *>(sender());
+    if (clientSocket)
+    {
         QByteArray data = clientSocket->readAll();
         emit dataReceived(clientSocket, data);
     }
@@ -73,8 +94,9 @@ void TcpServer::onClientReadyRead()
 
 void TcpServer::onClientDisconnected()
 {
-    QTcpSocket *clientSocket = qobject_cast<QTcpSocket*>(sender());
-    if (clientSocket) {
+    QTcpSocket *clientSocket = qobject_cast<QTcpSocket *>(sender());
+    if (clientSocket)
+    {
         m_clients.removeAll(clientSocket);
         emit clientDisconnected(clientSocket);
         clientSocket->deleteLater();
